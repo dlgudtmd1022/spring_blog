@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 @SpringBootTest // @Mapper로 적재된 마이바티스 인터페이스 인식을 위해 어노테이션 작성
 public class ConnectionTestRepositoryTest {
 
@@ -14,4 +16,5 @@ public class ConnectionTestRepositoryTest {
     public void getNowTest(){
         System.out.println("얻어온 현재 시간 : " + connectionTestRepository.getNow());
     }
+
 }
