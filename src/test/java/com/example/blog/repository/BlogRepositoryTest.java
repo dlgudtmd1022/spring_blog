@@ -1,16 +1,15 @@
 package com.example.blog.repository;
 
 import com.example.blog.entity.Blog;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.sql.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 @SpringBootTest
@@ -27,19 +26,108 @@ public class BlogRepositoryTest {
     }
 
     @Test
+    @DisplayName("전체 행을 얻어옴")
     public void findAll(){
-        // given 없음
+        // given 2번 요소 조회를 위찬 fixture선언
+        int blogId = 1; // 자바 자료구조 인덱스는 0번부터
 
         // when
         List<Blog>blogList = blogRepository.findAll();
 
         //then 더미테이터가 3개이믈 3개일것이라 단언
         assertEquals(3,blogList.size());
+        // 2번째 객체의 ID번호는 2번일것이다
+        assertEquals(2, blogList.get(blogId).getBlogId());
     }
 
     @AfterEach // 각 단위테스트 끝난 후에 실행할 구문을 작성
     public void dropBlogTable(){
         blogRepository.dropBlogTable(); // blog테이블 지우기
+    }
+
+    @Test
+    @DisplayName("2번 글을 조회했을때, 제목과 글쓴이와 번호가 단언대로 받아와지는지 확인")
+    public void findById(){
+        // given : 조회할 DB기준 2번 id를 변수로 저장합니다.
+        long blogId = 2;
+
+        // when : 레퍼지토리에서 단일행 Blog를 얻어와 저장합니다.
+        Blog blog = blogRepository.findById(blogId);
+
+        // then : 해당 객체의 writer 맴버 변수는 "2번유저"이고 제목은 "2번제목"
+        // blogId는 2이다.
+        assertEquals("2번유저",blog.getWriter());
+        assertEquals("2번제목",blog.getBlogTitle());
+        assertEquals(2, blog.getBlogId());
+    }
+
+    @Test
+    @DisplayName("4번째 행 데이터 저장 후 , 행 저장여부 및 전달데이터 저장 여부 확인")
+    public void saveTest(){
+        // given : 저장을 위한 Blog entity 생성 및 writer, blogTitle, blogContent
+        // 에 해당하는 fixture setter로 저장하기, findAll()로 얻어올 데이터의 인덱스 번호 저장
+        String writer = "4번유저";
+        String blogTitle = "4번제목";
+        String blogContent = "4번본문";
+        int blogId = 3; // 4번째 요소 조회 (자바 인덱스는 0번부터 시작)
+//        Blog blog = new Blog();
+//        blog.setWriter(writer);
+//        blog.setBlogTitle(blogTitle);
+//        blog.setBlogContent(blogContent);
+        // blog 객체 생성 코드를 빌더패턴으로 리팩토링
+        // 빌더 패턴 쓰는법
+        // 장점 : 파라미터 순서를 바궈서 집어 넣어도 상관없음
+        Blog blog = Blog.builder() // 빌더패턴 시작
+                .writer(writer)
+                .blogTitle(blogTitle)
+                .blogContent(blogContent)
+                .build(); // 빌더패턴 끝
+
+        // when : save 메서드 호출하고, findAll()로 전체 데이터 가져오기
+        blogRepository.save(blog);
+        List<Blog>blogList = blogRepository.findAll();
+
+        // then : 전체 데이터 개수가 4개인지,
+        // 그리고 방금 INSERT한 데이터의 writer, blogTitle, blogContent가
+        // 입력한대로 들어갔는지 단언문으로 확인
+        assertEquals(4, blogList.size());
+        assertEquals(writer,blogList.get(blogId).getWriter());
+        assertEquals(blogTitle,blogList.get(blogId).getBlogTitle());
+        assertEquals(blogContent,blogList.get(blogId).getBlogContent());
+    }
+
+    @Test
+    @DisplayName("2번글 삭제 후 전체 목록 가져왔을때 남은행수 2개, 삭제한번호 재 조회시 null")
+    public void deleteByIdTest(){
+        // given : 삭제할 자료의 번호를 저장
+            long blogId = 2;
+        // when : 삭제로직 실행 후 , finlAll(), findById()로 전체 행, 개별행 가져오기
+            blogRepository.deleteById(blogId);
+        // then : 단언문을 이용해 전체 행 2개, 개별 행은 null임을 확인
+            assertEquals(2,blogRepository.findAll().size());
+            assertNull(blogRepository.findById(blogId));
+    }
+
+    @Test
+    @DisplayName("제목과 본문 업데이트, 날짜는 콘솔창에 출력")
+    public void updateTest(){
+        // given
+        int blogId = 0;
+        String blogTitle = "업데이트된 제목";
+        String blogContent = "업데이트된 본문";
+        Blog blog = Blog.builder()
+                     .blogId(1)
+                        .blogTitle(blogTitle)
+                        .blogContent(blogContent)
+                         .build();
+        // when
+        blogRepository.update(blog);
+        List<Blog> blogList = blogRepository.findAll();
+
+        // then
+        assertEquals("업데이트된 제목",blogList.get(blogId).getBlogTitle());
+        assertEquals("업데이트된 본문",blogList.get(blogId).getBlogContent());
+        System.out.println("업데이트 날짜 : " + blogRepository.findById(blog.getBlogId()).getUpdatedAt());
     }
 
 }

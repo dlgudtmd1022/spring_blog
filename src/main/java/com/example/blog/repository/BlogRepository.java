@@ -22,5 +22,24 @@ public interface BlogRepository {
     // 전체 데이터 조회 기능 finlAll()
     // Blog 엔터티 하나가 포스팅 row 하나를 받을 수 있고
     // n개의 복수의 Blog 엔터티를 받아와야 하므로 List로 감쌈
-        List<Blog> findAll();
+    List<Blog> findAll();
+
+    // 단일행 조회 기능 findById()
+    // 호출 시 blogId를 요구
+    Blog findById(long blogId);
+
+    //  새 데이터 저장
+    //  저장시 writer, blog_title, blog_content 3개 파라미터를 요구함
+    // 근데 위 3개 파라미터는 Bolg 엔터티의 맴버변수임
+    void save(Blog blog);
+
+    // 데이터 삭제 기능 deleteById()
+    // 삭제시 삭제에 필요한 primary key에 해당하는 아이값을 요구
+    void deleteById(long bolgId);
+
+    // 데이터 수정 기능 update()
+    // JPA에서는 .save()를 동일하게 쓰지만, 현재 코드에서 메서드 오버로딩도 불가능하고
+    // 분리할 방법이 없으므로 메서드명을 다르게 사용하니다.
+    void update(Blog blog);
+
 }
