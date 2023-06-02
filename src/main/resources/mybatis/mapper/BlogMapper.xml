@@ -47,7 +47,7 @@
         FROM
             blog
         WHERE
-            blog_id = #{bolgId}
+            blog_id = #{blogId}
     </delete>
 
     <!-- 테스트를 위한 쿼리문들 -->

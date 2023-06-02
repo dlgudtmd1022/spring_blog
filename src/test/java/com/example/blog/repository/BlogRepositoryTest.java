@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 @SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS) // DROP TABLE시 필요한 어노테이션
+@TestInstance(TestInstance.Lifecycle.PER_METHOD) // 테스트 코드 주기가 메서드
 public class BlogRepositoryTest {
 
     @Autowired
@@ -111,23 +111,51 @@ public class BlogRepositoryTest {
     @Test
     @DisplayName("제목과 본문 업데이트, 날짜는 콘솔창에 출력")
     public void updateTest(){
-        // given
-        int blogId = 0;
-        String blogTitle = "업데이트된 제목";
-        String blogContent = "업데이트된 본문";
+
+//        int blogId = 0;
+//        String blogTitle = "업데이트된 제목";
+//        String blogContent = "업데이트된 본문";
+//        Blog blog = Blog.builder()
+//                .blogId(blogId)
+//                .blogTitle(blogTitle)
+//                .blogContent(blogContent)
+//                .build();
+//        // when
+//        blogRepository.update(blog);
+//        List<Blog> blogList = blogRepository.findAll();
+//
+//        // then
+//        assertEquals("업데이트된 제목",blogList.get(blogId).getBlogTitle());
+//        assertEquals("업데이트된 본문",blogList.get(blogId).getBlogContent());
+//        System.out.println("업데이트 날짜 : " + blogRepository.findById(blog.getBlogId()).getUpdatedAt());
+
+        // given : 2번글 원본 데이터를 얻어온 다음, blogTitle, blogContent내용만 수정해서 다시 update()
+        // Blog객체를 생성해서 blogId, blogTitle, bolgContent내용만  setter로 주입해서 다시 update()
+
+        //픽스처 생성
+        long blogId = 2;
+        String blogTitle = "수정한제목";
+        String blogContent = "수정한본문";
+
+//        // 1번 given 실행
+//
+////        Blog blog = blogRepository.findById(blogId);
+////        blog.setBlogTitle(blogTitle);
+////        blog.setBlogContent(blogContent);
+
+        // 2번 given 실행
         Blog blog = Blog.builder()
-                     .blogId(1)
-                        .blogTitle(blogTitle)
-                        .blogContent(blogContent)
-                         .build();
+                .blogId(blogId)
+                .blogTitle(blogTitle)
+                .blogContent(blogContent)
+                .build();
+
         // when
         blogRepository.update(blog);
-        List<Blog> blogList = blogRepository.findAll();
 
-        // then
-        assertEquals("업데이트된 제목",blogList.get(blogId).getBlogTitle());
-        assertEquals("업데이트된 본문",blogList.get(blogId).getBlogContent());
-        System.out.println("업데이트 날짜 : " + blogRepository.findById(blog.getBlogId()).getUpdatedAt());
+        // then : 바뀐 2번 글의 타이틀은 : "수정한 제목", 본문은 "수정한본문"으로 변환되었을것이다.
+        assertEquals(blogTitle, blogRepository.findById(blogId).getBlogTitle());
+        assertEquals(blogContent, blogRepository.findById(blogId).getBlogContent());
     }
 
 }

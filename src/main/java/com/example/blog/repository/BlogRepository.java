@@ -35,7 +35,7 @@ public interface BlogRepository {
 
     // 데이터 삭제 기능 deleteById()
     // 삭제시 삭제에 필요한 primary key에 해당하는 아이값을 요구
-    void deleteById(long bolgId);
+    void deleteById(long blogId);
 
     // 데이터 수정 기능 update()
     // JPA에서는 .save()를 동일하게 쓰지만, 현재 코드에서 메서드 오버로딩도 불가능하고
