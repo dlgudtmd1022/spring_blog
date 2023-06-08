@@ -34,6 +34,9 @@
         </c:forEach>
         </tbody>
     </table><!-- .table table-hover -->
+    <form action="/blog/insert" method="GET">
+        <input type="submit" class="btn btn-info" value="추가하기">
+    </form>
 </div><!-- .container -->
 </body>
 </html>
