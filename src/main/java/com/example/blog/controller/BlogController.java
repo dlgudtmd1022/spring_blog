@@ -1,12 +1,16 @@
 package com.example.blog.controller;
 
 import com.example.blog.entity.Blog;
+import com.example.blog.exception.NotFoundBlogIdException;
 import com.example.blog.service.BlogService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -37,5 +41,84 @@ public class BlogController {
         model.addAttribute("blogList", blogList);
         // 3
         return "blog/list";
+    }
+
+    // 디테일 페이지의 주소 패턴
+    // /blog/detail/ 글번호
+    // 위 방식으로 글 번호를 입력받아, service를 이용해 해당 글 번호 요소만 얻어서
+    // 뷰에 적재하는 코드를 아래쪽에 작성해주세요
+
+    @RequestMapping("/detail/{blogId}")
+    public String detail(@PathVariable long blogId, Model model){
+        Blog blog = blogService.findById(blogId);
+
+        if(blog == null){
+            try {
+                throw new NotFoundBlogIdException("없는 blogId로 조회했습니다. 조회번호 : " + blogId);
+            } catch(NotFoundBlogIdException e){
+                return "blog/NotFoundBlogIdExceptionResultPage";
+            }
+        }
+
+        model.addAttribute("blog", blog);
+
+//        model.addAttribute("blog", blogService.findById(blogId));
+
+        // /WEB-INF/views/blog/detail.jsp
+        return "/blog/detail";
+    }
+
+    // 폼 페이지와 실제 등록 url은 같은 url을 쓰도록 합니다.
+    // 대신 폼 페이지는 GET방식으로 접속했을때 연결해주고
+    // 폼에서 작성완료한 내용을 POST방식으로 제출해 저장하도록 만들어줍니다.
+    @GetMapping("/insert")
+    public String insert(){
+        // /WEB-INF/views/blog/blog-form.jsp
+        return "blog/blog-form";
+    }
+
+    @PostMapping("/insert")
+    public String insert(Blog blog){
+        // 서비스 객체를 이용해서 DB에 저장해주시고
+        blogService.save(blog);
+        // 저장후에는 리다이렉트로 list페이지로 돌아오게 해 주세요
+        return "redirect:/blog/list";
+    }
+
+    // DELETE로직은 삭제 후 /blog/list로 리다이렉트 되어서 자료가 삭제된 것을 확인해야 합니다.
+    // 글 번호만으로 삭제를 진행해야 합니다.
+    // 따라서, detail 페이지에 삭제버튼을 추가하고, 해당 버튼을 클릭했을때, 삭제 번호가 전달되어서
+    // 전달받은 번호를 토대로 삭제하도록 로직을 구성해주시면 됩니다
+    @PostMapping("/delete")
+//    @Log4j2 // sout이 아닌 룅을 통한 디버깅을 위해 선언
+    public String delete(long blogId){
+//        log.info(blogid);
+        blogService.deleteById(blogId);
+
+        return "redirect:/blog/list";
+    }
+
+    // UPDATE 구문은 다른 내역은 다 INSERT와 비슷하지만
+    // 한 가지 차이점은, 폼이 이미 기존에 작성된 정보로 채워져 있다는 점입니다.
+    // 이를 구현하기 위해 수정 버튼이 눌렸을떼, 제일 먼저 해당 글 정보를 획득한 다음
+    // 폼 페이지에 model.addAttribute()로 보내줘야 합니다.
+    // 그 다음 수정용 폼 페이지에 해당 자료를 채운 채 연결해주면 됩니다.
+    // 이를 위해 value= 를 이용함ㄴ 미리 원하는 내용으로 폼을 체워둘 수 있습니다.
+    @PostMapping("/updateform")
+    public String update(long blogId, Model model){
+        // bolgId를 이용해서 blog객체를 받아옵니다.
+        Blog blog = blogService.findById(blogId);
+        // .jsp로 보내기 위해 적재합니다.
+        model.addAttribute("blog",blog);
+        // /WEB-INF/views/blog/blog-update-form.jsp
+        return "blog/blog-update-form";
+    }
+
+    @PostMapping("/update")
+    public String update(Blog blog) {
+        // 받아온 blog엔터티로 글 수정
+        blogService.update(blog);
+        // 리다이렉트는 가능하시면 해당 글번호의 디테일페이지로 넘어가게 해 주시고 어려우면 list
+        return "redirect:/blog/detail/" + blog.getBlogId() ;
     }
 }
