@@ -100,7 +100,7 @@ public class ReplyRepositoryTest {
         ReplyFindByIdDTO result =  replyRepository.findByReplyId(replyId);
 
 //        assertNotEquals(result.getPublishedAt(), result.getUpdatedAt());
-        // 업데이트 시간이 글을 작성한 시간보다 이후라고 단언
+        // 업데이트 시간이 글을 작성한 시간보다 이후라고 단언함
         assertTrue(result.getUpdatedAt().isAfter(result.getPublishedAt()));
     }
 }
