@@ -30,4 +30,29 @@
         WHERE
             reply_id = #{replyId}
     </select>
+
+    <delete id="deleteByReplyId" parameterType="com.example.blog.dto.ReplyFindByIdDTO">
+        DELETE FROM
+                   reply
+        WHERE
+                reply_id = #{replyId}
+    </delete>
+
+    <insert id="save" parameterType="com.example.blog.dto.ReplyFindByIdDTO">
+        INSERT INTO
+            reply(blog_id, reply_writer, reply_content)
+        VALUES
+            (#{blogId}, #{replyWriter}, #{replyContent})
+    </insert>
+
+    <update id="update" parameterType="com.example.blog.dto.ReplyFindByIdDTO">
+        UPDATE
+            reply
+        SET
+            reply_writer = #{replyWriter},
+            reply_content = #{replyContent},
+            updated_at = now()
+        WHERE
+            reply_id = #{replyId};
+    </update>
 </mapper>
