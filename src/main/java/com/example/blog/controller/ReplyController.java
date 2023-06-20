@@ -29,7 +29,7 @@ public class ReplyController {
     @GetMapping("/{blogId}/all")
     // rest서버는 응답시 응답코드와 응답객체를 넘기기 대문에 ResponseEntity<자료형>
     // 을 리턴합니다.
-    public ResponseEntity<List<ReplyFindByIdDTO>> findAllreplies(@PathVariable long blogId){
+    public ResponseEntity<List<ReplyFindByIdDTO>> findAllReplies(@PathVariable long blogId){
         // 서비스에서 리품 목록을 들고옵니다.
         List<ReplyFindByIdDTO> replies = replyService.findAllByBlogId(blogId);
 
