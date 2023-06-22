@@ -1,7 +1,8 @@
 package com.example.blog.controller;
 
+import com.example.blog.dto.ReplyFindByIdDTO;
 import com.example.blog.dto.ReplyInsertDTO;
-import com.example.blog.dto.ReplyUpdateDTO;
+import com.example.blog.repository.ReplyRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +17,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,6 +37,12 @@ class ReplyControllerTest{
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    // 임시적으로 Replyrepository를 생성
+    // 레퍼지토리 레이어의 메서드는 쿼리문을 하나를 호출하는것이 보장되지만
+    // 서비스 레이어의 메서드는 추후에 쿼리문을 두 개 이상 호출할수도 있고 그런 변경이 생겼을때 테스트코드도 같이 수행할 가능성이 생김
+    @Autowired
+    private ReplyRepository replyRepository;
 
     // 컨트롤러를 테스트 해야하는데 컨트롤러는 서버에 url만 입력하면 동작하므로 컨트롤러를 따로 생성하지는 않습니다.
     // 각 테스트전에 설정하기
@@ -120,5 +130,26 @@ class ReplyControllerTest{
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].replyWriter").value(replyWriter))
                 .andExpect(jsonPath("$[0].replyContent").value(replyContent));
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("댓글번호 3번을 삭제시, 글번호 2번의 댓글수는 3개, 그리고 단일댓글 조회시 null")
+    public void deleteByReplyTest() throws Exception{
+        // given
+        long replyId = 3;
+        long blogId = 2;
+        String url = "http://localhost:8080/reply/3";
+
+        // when : 삭제 수행
+        mockMvc.perform(delete(url).accept(MediaType.TEXT_PLAIN));
+        // .accept는 리턴 데이터가 있는 경우에 해당 데이터를 어떤 형식으로 받아올지 기술
+
+        // then : repository를 이용해 전체 데이터를 가져온 후, 개수 비교 및 삭제한 3번댓글은 null이 리턴되는지 확인
+        List<ReplyFindByIdDTO> resultList = replyRepository.findAllByBlogId(blogId);
+//        assertEquals("바둑이", replyRepository.findByReplyId(replyId).getReplyWriter());
+        assertEquals(3, resultList.size());
+        ReplyFindByIdDTO result = replyRepository.findByReplyId(replyId);
+        assertNull(result);
     }
 }

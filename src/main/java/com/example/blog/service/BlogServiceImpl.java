@@ -2,7 +2,10 @@ package com.example.blog.service;
 
 import com.example.blog.entity.Blog;
 import com.example.blog.repository.BlogRepository;
+import com.example.blog.repository.ReplyRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -11,8 +14,12 @@ public class BlogServiceImpl implements BlogService {
 
     BlogRepository blogRepository;
 
-    public BlogServiceImpl(BlogRepository blogRepository){
+    ReplyRepository replyRepository;
+
+    @Autowired // 생성자 주입이 속도가 더 빠름.
+    public BlogServiceImpl(BlogRepository blogRepository, ReplyRepository replyRepository){
         this.blogRepository = blogRepository;
+        this.replyRepository = replyRepository;
     }
     @Override
     public List<Blog> findAll(){
@@ -26,8 +33,10 @@ public class BlogServiceImpl implements BlogService {
         return blogRepository.findById(blogId);
     }
 
+    @Transactional
     @Override
     public void deleteById(long blogId) {
+        replyRepository.deleteByBlogId(blogId);
         blogRepository.deleteById(blogId);
     }
 

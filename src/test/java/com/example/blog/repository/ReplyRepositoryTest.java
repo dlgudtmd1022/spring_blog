@@ -41,7 +41,7 @@ public class ReplyRepositoryTest {
         // when
         ReplyFindByIdDTO result = replyRepository.findByReplyId(replyId);
         // then
-        assertEquals("고양이", result.getReplyWriter());
+        assertEquals("바둑이", result.getReplyWriter());
         assertEquals(3, result.getReplyId());
     }
 
@@ -102,5 +102,20 @@ public class ReplyRepositoryTest {
 //        assertNotEquals(result.getPublishedAt(), result.getUpdatedAt());
         // 업데이트 시간이 글을 작성한 시간보다 이후라고 단언함
         assertTrue(result.getUpdatedAt().isAfter(result.getPublishedAt()));
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("blogId가 2인 글을 삭제하면, 삭제한 글의 전체 댓글 조회시 null일것이다.")
+    public void deleteByBlogIdTest(){
+        // given : fixture 작성
+        long blogId = 2;
+        // when : 삭제수행
+        replyRepository.deleteByBlogId(blogId);
+
+        List<ReplyFindByIdDTO> resultList = replyRepository.findAllByBlogId(blogId);
+
+        // then
+        assertEquals(0, resultList.size());
     }
 }

@@ -2,9 +2,9 @@ package com.example.blog.controller;
 
 import com.example.blog.dto.ReplyFindByIdDTO;
 import com.example.blog.dto.ReplyInsertDTO;
-import com.example.blog.entity.Reply;
 import com.example.blog.exception.NotFoundReplyByReplyIdException;
 import com.example.blog.service.ReplyService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +20,7 @@ public class ReplyController {
 
     ReplyService replyService;
 
+    @Autowired
     public ReplyController(ReplyService replyService) {
         this.replyService = replyService;
     }
@@ -42,23 +43,22 @@ public class ReplyController {
 
     // replyId를 주소에 포함시켜서 요청하면 해당 번호 댓글 정보를 json으로 리턴하는메서드
     // 예시> /reply5 -> replyId 변수에 5가 대입되도록 주소 설정 및 메서드 선언
-    @GetMapping("/{replyId}")
-    public ResponseEntity<?> findByReplyId(@PathVariable long replyId) {
-        // 서비스에서 특정 번호를 리플에 가져옵니다.
+    @RequestMapping(value = "/{replyId}", method = RequestMethod.GET)
+    public ResponseEntity<?> findByReplyId(@PathVariable long replyId){
+
+        // 서비스에서 특정 번호 리플을 가져옵니다.
         ReplyFindByIdDTO replyFindByIdDTO = replyService.findByReplyId(replyId);
-
-        //예외 처리는 추후에 만들 예정
-
-        if (replyFindByIdDTO == null) {
+        if(replyFindByIdDTO == null) {
             try {
-                throw new NotFoundReplyByReplyIdException("없는 리플 번호를 조회했습니다.");
-                //
+                throw new NotFoundReplyByReplyIdException("없는 리플 번호를 조회했습니다");
             } catch (NotFoundReplyByReplyIdException e) {
                 e.printStackTrace();
                 return new ResponseEntity<>("찾는 댓글 번호가 없습니다.", HttpStatus.NOT_FOUND);
             }
         }
-        return ResponseEntity.ok(replyFindByIdDTO);
+        //return new ResponseEntity<ReplyFindByIdDTO>(replyFindByIdDTO, HttpStatus.OK);
+        return ResponseEntity
+                .ok(replyFindByIdDTO);
     }
 
     // post 방식으로 /reply 주소로 요청이 들어왔을 때 실행되는 메서드 insertReply()
@@ -68,8 +68,19 @@ public class ReplyController {
                                 // Rest컨트롤러는 데이터를 json으로 주고받음.
                                 // 따라서 @RequestBody 를 이용해 json으로 등러온 데이터를 역직렬화 하도록 설정
     public ResponseEntity<String> insertReply(@RequestBody ReplyInsertDTO replyInsertDTO){
+        // 예외 처리 해보기
+
             replyService.save(replyInsertDTO);
             return ResponseEntity
                     .ok("댓글 등록 잘 했네~");
     }
+
+    // delete 방식으로 /reply/{댓글번호} 주소로 요청이 들어왔을때 실행되는 메서드 deleteReply()를 작성해주세요.
+    @DeleteMapping("/{replyId}")
+    public ResponseEntity<String> deleteReply(@PathVariable long replyId){
+        replyService.deleteByReplyId(replyId);
+
+        return ResponseEntity.ok("댓글이 잘 삭제되었습니다.");
+    }
+
 }

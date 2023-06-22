@@ -5,7 +5,6 @@ import com.example.blog.dto.ReplyInsertDTO;
 import com.example.blog.dto.ReplyUpdateDTO;
 import com.example.blog.repository.ReplyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,4 +41,5 @@ public class ReplyServiceImpl implements ReplyService {
     public void update(ReplyUpdateDTO replyUpdateDTO){
         replyRepository.update(replyUpdateDTO);
     }
+
 }

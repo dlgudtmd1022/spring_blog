@@ -11,10 +11,10 @@ CREATE TABLE reply(
 # blog_id에는 기존에 존재하는 글의 blog_id만 들어가야 한다.
 alter table reply add constraint fk_reply foreign key (blog_id) references blog(blog_id);
 
-# 더미 데이터 입력
+# 더미 데이터 입력(테스트 DB에서만 사용합니다.)
 INSERT INTO reply VALUES
-                      (null, 2, "댓글쓴사람", "1빠댓글이다~~",now(),now()),
-                      (null, 2, "강아지", "월월이다~~",now(),now()),
-                      (null, 2, "고양이", "미야옹이다~~",now(),now()),
-                      (null, 3, "호랑이", "어흥이다~~",now(),now()),
-                      (null, 3, "돼지", "밥줘라~",now(),now());
+                        (null, 2, "댓글쓴사람", "1빠댓글이다~~~~", now(), now()),
+                        (null, 2, "짹짹이", "짹짹쨲쨲쨲쨰꺠ㅉ꺠ㅉㄲㅉ꺢", now(), now()),
+                        (null, 2, "바둑이", "멍멍멍멍머엄엄엄어멍머어멍~~~~", now(), now()),
+                        (null, 2, "야옹이", "고양이가 어떻게 댓글을 씀?", now(), now()),
+                        (null, 3, "개발고수", "아 REST써버 개쉽당", now(), now());

@@ -5,6 +5,7 @@ import com.example.blog.dto.ReplyInsertDTO;
 import com.example.blog.dto.ReplyUpdateDTO;
 import com.example.blog.entity.Reply;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -28,4 +29,9 @@ public interface ReplyRepository {
     // 수정로직은 replyId를 WHERE절에 집어넣고, replyWriter, replyContent의 내용을 업데이트 해주고
     // update 역시 now()로 바꿔줍니다.
     void update(ReplyUpdateDTO replyUpdateDTO);
+
+    // blogId 를 받아서 특정 글과 얀계된 댓글 전체를 삭제하는 메서드를 정의만 해주세요
+    void deleteByBlogId(long blogId);
+
+
 }
