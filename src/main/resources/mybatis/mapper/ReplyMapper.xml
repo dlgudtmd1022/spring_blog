@@ -3,9 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!--xml파일에는 SQL구문만 따로 작성하기 때문에 자바 메서드를 선언할 연동인터페이스를 매칭시켜줍니다.-->
-<mapper namespace="com.example.blog.repository.ReplyRepository">
+<mapper namespace="com.spring.blog.repository.ReplyRepository">
 
-    <select id="findAllByBlogId" resultType="com.example.blog.dto.ReplyFindByIdDTO">
+    <select id="findAllByBlogId" resultType="com.spring.blog.dto.ReplyResponseDTO">
         SELECT
             reply_id as replyId,
             reply_writer as replyWriter,
@@ -18,7 +18,7 @@
             blog_id = #{blogId}
     </select>
 
-    <select id="findByReplyId" resultType="com.example.blog.dto.ReplyFindByIdDTO" parameterType="long">
+    <select id="findByReplyId" resultType="com.spring.blog.dto.ReplyResponseDTO" parameterType="long">
         SELECT
             reply_id as replyId,
             reply_writer as replyWriter,
@@ -31,21 +31,21 @@
             reply_id = #{replyId}
     </select>
 
-    <delete id="deleteByReplyId" parameterType="com.example.blog.dto.ReplyFindByIdDTO">
+    <delete id="deleteByReplyId" parameterType="com.spring.blog.dto.ReplyResponseDTO">
         DELETE FROM
                    reply
         WHERE
                 reply_id = #{replyId}
     </delete>
 
-    <insert id="save" parameterType="com.example.blog.dto.ReplyFindByIdDTO">
+    <insert id="save" parameterType="com.spring.blog.dto.ReplyResponseDTO">
         INSERT INTO
             reply(blog_id, reply_writer, reply_content)
         VALUES
             (#{blogId}, #{replyWriter}, #{replyContent})
     </insert>
 
-    <update id="update" parameterType="com.example.blog.dto.ReplyFindByIdDTO">
+    <update id="update" parameterType="com.spring.blog.dto.ReplyResponseDTO">
         UPDATE
             reply
         SET
