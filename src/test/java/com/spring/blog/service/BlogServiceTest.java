@@ -105,4 +105,6 @@ public class BlogServiceTest {
         // then
         assertEquals(blogTitle, blogService.findById(blogId).getBlogTitle());
     }
+
+    // blog와 함께 reply가 삭제되는 케이스는 따로 다시 테스트코드를 하나 더 작성해주는게 좋습니다.
 }

@@ -2,6 +2,7 @@ package com.spring.blog.controller;
 
 import com.spring.blog.dto.ReplyResponseDTO;
 import com.spring.blog.dto.ReplyCreateRequestDTO;
+import com.spring.blog.dto.ReplyUpdateRequestDTO;
 import com.spring.blog.exception.NotFoundReplyByReplyIdException;
 import com.spring.blog.service.ReplyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,8 +65,8 @@ public class ReplyController {
     @RequestMapping(value = "", method = RequestMethod.POST)
     // Rest컨트롤러는 데이터를 json으로 주고받음.
     // 따라서 @RequestBody 를 이용해 json으로 들어온 데이터를 역직렬화 하도록 설정
-    public ResponseEntity<String> insertReply(@RequestBody ReplyCreateRequestDTO replyInsertDTO) {
-        replyService.save(replyInsertDTO);
+    public ResponseEntity<String> insertReply(@RequestBody ReplyCreateRequestDTO replyCreateRequestDTO) {
+        replyService.save(replyCreateRequestDTO);
         return ResponseEntity
                 .ok("댓글 등록이 잘 되었습니다.");
     }
@@ -76,6 +77,20 @@ public class ReplyController {
         replyService.deleteByReplyId(replyId);
 
         return ResponseEntity.ok("삭제완료되었습니다");
+    }
+
+    // 수정로직은 put, patch 메서드로 /reply/댓글번호 ReplyUpdateRequestDTO로
+    // ReplyUpdateRequestDTO를 requestBody로 받아 요청처리를 하게 만들어주세요
+    @RequestMapping(value = "/{replyId}", method = {RequestMethod.PUT, RequestMethod.PATCH})
+    public ResponseEntity<String> updateReply(@PathVariable long replyId, @RequestBody ReplyUpdateRequestDTO replyUpdateRequestDTO){
+        // json데이터에 replyId를 포함하는 대신 url에 포함시켰으므로 requestBody에 추가해야함.
+        System.out.println("replyId 주입 전 " + replyUpdateRequestDTO );
+        replyUpdateRequestDTO.setReplyId(replyId);
+
+        System.out.println("replyId setter 주입 후 " + replyUpdateRequestDTO );
+        replyService.update(replyUpdateRequestDTO);
+
+        return ResponseEntity.ok("댓글 수정 완료");
     }
 
 }

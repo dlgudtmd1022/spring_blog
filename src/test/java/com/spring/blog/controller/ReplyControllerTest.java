@@ -2,6 +2,7 @@ package com.spring.blog.controller;
 
 import com.spring.blog.dto.ReplyResponseDTO;
 import com.spring.blog.dto.ReplyCreateRequestDTO;
+import com.spring.blog.dto.ReplyUpdateRequestDTO;
 import com.spring.blog.repository.ReplyRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -151,5 +152,38 @@ class ReplyControllerTest{
         assertEquals(3, resultList.size());
         ReplyResponseDTO result = replyRepository.findByReplyId(replyId);
         assertNull(result);
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("댓글 번호 4번, 작성자를 개똥벌레, 본문 내용을 친구가 없네~ 로 수정")
+    public void updateReplyTest()throws Exception{
+        // givin
+//        long replyId = 4;
+        String writer = "개똥벌레";
+        String content = "친구가 없네~";
+        String url = "/reply/4"; // 4번 댓글에 대한 수정 요청 넣기
+
+        ReplyUpdateRequestDTO replyUpdateRequestDTO = ReplyUpdateRequestDTO.builder()
+//                .replyId(replyId)
+                .replyWriter(writer)
+                .replyContent(content)
+                .build();
+
+        // 데이터 json으로 직렬화
+        final String requestBody = objectMapper.writeValueAsString(replyUpdateRequestDTO);
+
+        // when : 직렬화된 데이터를 이용해 patch방식으로 세팅된 요청 주소에 요청 넣기
+        mockMvc.perform(patch(url)
+                .contentType(MediaType.APPLICATION_JSON) // 보내는 데이터 JSON
+                .content(requestBody)); // 직렬화된 데이터 전송
+
+        final ResultActions result = mockMvc.perform(get(url)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.replyWriter").value(writer))
+                .andExpect(jsonPath("$.replyContent").value(content));
     }
 }
