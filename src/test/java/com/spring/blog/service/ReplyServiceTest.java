@@ -42,7 +42,7 @@ public class ReplyServiceTest {
 
         List<ReplyResponseDTO> list = replyService.findAllByBlogId(blogId);
 
-        assertEquals("강아지", list.get(replyId - 1).getReplyWriter());
+        assertEquals("짹짹이", list.get(replyId - 1).getReplyWriter());
     }
 
     @Test
