@@ -1,325 +1,330 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
+
 <head>
-    <!-- CSS only -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <!-- JavaScript Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <title>Insert title here</title>
-    <style>
-        div {
-            border: 1px solid black;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+          crossorigin="anonymous">
 </head>
+<style>
+    .text-center,
+    .row,
+    .col {
+        border: 1px solid black;
+    }
+
+    .title {
+        font-weight: bold;
+        background-color: rgb(178, 198, 235);
+    }
+
+    .content {
+        padding: 20px;
+    }
+
+    .button {
+        display: inline;
+        float: left;
+    }
+
+    .writer {
+        float: left;
+    }
+
+    .date {
+        float: right;
+        font-size: 12px;
+        margin-left: 10px;
+    }
+
+    .replyTextarea {
+        width: 87%;
+        height: 100px;
+        resize: none;
+        vertical-align: middle;
+        float: left;
+    }
+
+    .replyInput {
+        width: 10%;
+        height: 100px;
+        vertical-align: middle;
+        float: right;
+    }
+
+    .reButton {
+        float: right;
+        color: gray;
+        text-decoration: none;
+        font-size: 12px;
+    }
+
+    .replyContent {
+        float: left;
+    }
+</style>
+
 <body>
-<div class="container">
-    <!-- 모달 자리 -->
-    <div class="modal fade" id="replyUpdateModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">댓글 수정하기</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    작성자 : <input type="text" class="form-control" id="modalReplyWriter"><br>
-                    댓글내용 : <input type="text" class="form-control" id="modalReplyContent">
-                    <input type="hidden" id="modalReplyId" value="">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="replyUpdateBtn">수정하기</button>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="container text-center">
     <div class="row first-row">
-        <div class="col-1">
+        <div class="col-1 title">
             글번호
         </div>
         <div class="col-1">
             ${blog.blogId}
         </div>
-        <div class="col-2">
+        <div class="col-2 title">
             글제목
         </div>
-        <div class="col-4">
+        <div class="col-6">
             ${blog.blogTitle}
         </div>
-        <div class="col-1">
-            작성자
+        <div class="col-1 title">
+            글쓴이
         </div>
         <div class="col-1">
             ${blog.writer}
         </div>
-        <div class="col-1">
+    </div>
+    <div class="row second-row">
+        <div class="col-1 title">
+            작성일
+        </div>
+        <div class="col-4">
+            ${blog.publishedAt}
+        </div>
+        <div class="col-1 title">
+            수정일
+        </div>
+        <div class="col-4">
+            ${blog.updatedAt}
+        </div>
+        <div class="col-1 title">
             조회수
         </div>
         <div class="col-1">
             ${blog.blogCount}
         </div>
-    </div><!--.first-row-->
-    <div class="row second-row">
-        <div class="col-1">
-            작성일
-        </div>
-        <div class="col-5">
-            ${blog.publishedAt}
-        </div>
-        <div class="col-1">
-            수정일
-        </div>
-        <div class="col-5">
-            ${blog.updatedAt}
-        </div>
-    </div><!-- .row second -->
-    <div class="row third-row">
-        <div class="col-1">
-            본문
-        </div>
-        <div class="col-11">
+    </div>
+    <div class="row" style="height: 500px;">
+        <div class="col content">
             ${blog.blogContent}
         </div>
-    </div><!-- .row third -->
-    <div class="row fourth-row">
-        <div class="col-2">
-            <a href="/blog/list"><button class="btn btn-secondary">목록으로</button></a>
-        </div>
-        <div class="col-2">
-            <form action="/blog/delete" method="POST">
-                <input type="hidden" name="blogId" value="${blog.blogId}">
-                <input type="submit" value="삭제하기" class="btn btn-warning">
-            </form>
-        </div>
-        <div class="col-2">
-            <form action="/blog/updateform" method="POST">
-                <input type="hidden" name="blogId" value="${blog.blogId}">
-                <input type="submit" value="수정하기" class="btn btn-info">
-            </form>
-        </div>
-    </div><!-- .row fourth -->
-    <div class="row">
-        <div id="replies">
-
+    </div>
+</div>
+<br>
+<div class="container">
+    <form name="deleteForm" style="margin-right: 5px;" class="button">
+        <a href="/blog/list" class="btn btn-primary">목록</a>
+        <input type="button" class="btn btn-primary" value="삭제" onclick="deleteBlog()">
+        <input type="hidden" name="blogId" value="${blog.blogId}">
+    </form>
+    <form name="updateForm">
+        <input type="button" class="btn btn-primary" value="수정" onclick="updateBlog()">
+        <input type="hidden" name="blogId" value="${blog.blogId}">
+    </form>
+    <div style="height: 100px; margin-top: 10px; ">
+        <input type="text" name="replyWriter" id="replyWriter" placeholder="작성자를 입력하세요">
+        <textarea placeholder="댓글을 작성해주세요" name="replyContent" id="replyContent"
+                  class="replyTextarea"></textarea>
+        <input type="button" value="작성" id="replySubmit" class="btn btn-primary replyInput">
+    </div>
+    <div class="row" style="border: none; width: 100%;">
+        <div id="replies"></div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="replyUpdateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">댓글 수정</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><b>작성자</b></p>
+                <input type="text" class="updateReplyWriter">
+                <p><b>댓글</b></p>
+                <textarea class = 'replyTextarea updateReplyContent'></textarea>
+                <input type="hidden" class="updateReplyId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" id="updateSubmitBtn" data-bs-dismiss="modal">수정</button>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <!-- 비동기 form의 경우는 목적지로 이동하지 않고 페이지 내에서 처리가 되므로
-        action을 가지지 않습니다. 그리고 제출버튼도 제출기능을 막고 fetch 요청만 넣습니다.-->
-        <div class="col-2">
-            <input type="text" class="form-control" id="replyWriter" name="replyWriter">
-        </div>
-        <div class="col-6">
-            <input type="text" class="form-control" id="replyContent" name="replyContent">
-        </div>
-        <div class="col-2">
-            <button class="btn btn-primary" id="replySubmit">댓글쓰기</button>
-        </div>
-    </div>
-</div><!-- .container -->
+</div>
 <script>
-    // 글 구성에 필요한 글번호를 자바스크립트 변수에 저장
+    function deleteBlog() {
+        let deleteForm = document.deleteForm;
+        let check = confirm("해당 게시물을 삭제하시겠습니까?");
+        if (check) {
+            alert("삭제완료!");
+            deleteForm.method = "POST";
+            deleteForm.action = "/blog/delete";
+            deleteForm.submit();
+        }
+
+    }
+
+    function updateBlog() {
+        let updateForm = document.updateForm;
+        let check = confirm("해당 게시물을 수정하시겠습니까?");
+        if (check) {
+            updateForm.method = "POST"
+            updateForm.action = "/blog/update"
+            updateForm.submit();
+        }
+    }
+
     let blogId = "${blog.blogId}";
+    const $replies = document.getElementById('replies');
+    function getAllReplies(blogId) {
+        fetch(`/reply/${blogId}/all`, { method: 'get' })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+                $replies.innerHTML = "";
+                // for (let i of data) {
+                //     let date = new Date(`\${i.publishedAt}`);
+                //     // jsp에서 리터럴을 사용하기 위해서는 역슬래시를 붙여줘야한다
+                //     // js를 분리하면 안 붙여줘도 된다
+                //     $replies.innerHTML += `<hr><p><b class = 'writer'>\${i.replyWriter}</b>
+                //         <span class='date'>\${date.getFullYear()}년 \${date.getMonth()}월 \${date.getDate()}일</span>
+                //         <br>\${i.replyContent} </p>`;
+                // }
 
-    // blogId를 받아 전체 데이터를 JS내부로 가져오는 함수 선언
-    function getAllReplies(id){
-        // <%-- jsp와 js가 모두 ${변수명} 문법을 공유하고, 이 중 .jsp파일에서는
-            // ${}의 해석을 jsp식으로 먼저 하기 때문에, 해당 ${}가 백틱 내부에서 쓰이는 경우
-            // \${} 형식으로 \를 추가로 왼쪽에 붙여서 jsp용으로 작성한 것이 아님을 명시해야함. --%>
-        let url = `http://localhost:8080/reply/\${id}/all`;
+                data.map((reply, i) => { // 첫 파라미터 : 반복대상자료, 두번째 파라미터 순번
+                    let date = "";
+                    let check = false;
+                    if(reply.publishedAt !== reply.updatedAt){
+                        date = new Date(`\${reply.updatedAt}`);
+                        check = true;
+                    }else{
+                        date = new Date(`\${reply.publishedAt}`);
+                    }
+                    $replies.innerHTML += `<hr>
+                                    <p class = 'reply'>
+                                        <b class = 'writer' >\${reply.replyWriter}</b>
+                                        <span class='date' id='date\${reply.replyId}'>\${date.getFullYear()}년 \${date.getMonth()+1}월 \${date.getDate()}일 \${date.getHours()}시 \${date.getMinutes()}분</span>
+                                        <br><span class ='replyContent' >\${reply.replyContent}</span>
+                                        <a class = 'reButton updateReplyBtn'
+                                            style='margin-left:5px' data-bs-toggle='modal' data-bs-target='#replyUpdateModal'
+                                            data-modalReplyWriter='\${reply.replyWriter}' data-modalReplyContent='\${reply.replyContent}' data-modalReplyId='\${reply.replyId}'>수정</a>
+                                        <a class = 'reButton deleteReplyBtn' data-replyId='\${reply.replyId}'>삭제</a>
+                                    </p><br>`;
 
-        let str = ""; // 받아온 json을 표현할 html 코드를 저장할 문자열 str 선언
-
-        fetch(url, {method:'get'}) // get방식으로 위 주소에 요청넣기
-            .then((res) => res.json())// 응답받은 요소중 json만 뽑기
-            .then(replies => { // 뽑아온 json으로 처리작업하기
-                console.log(replies);
-
-                //for(reply of replies){
-                //    console.log(reply);
-                //    console.log("---------");
-                //    str += `<h3>글쓴이: \${reply.replyWriter},
-                //        댓글내용: \${reply.replyContent}</h3>`;
-                //}
-
-                // .map()을 이용한 간결한 반복문 처리
-                replies.map((reply, i) => { // 첫 파라미터 : 반복대상자료, 두번째 파라미터 : 순번
-                    str +=
-                        `<h3>\${i+1}번째 댓글 || 글쓴이:
-                                <span id="replyWriter\${reply.replyId}">\${reply.replyWriter}</span>,
-                            댓글내용:
-                                <span id="replyContent\${reply.replyId}"> \${reply.replyContent}</span>
-                                <span class="deleteReplyBtn" data-replyId="\${reply.replyId}" >
-                                    [삭제]
-                                </span>
-                                <span class="updateReplyBtn" data-replyId="\${reply.replyId}"
-                                        data-bs-toggle="modal" data-bs-target="#replyUpdateModal">
-                                    [수정]
-                                </span>
-                            </h3>`;
+                    if(check){
+                        document.getElementById(`date\${reply.replyId}`).innerHTML += "<span style='color:gray'>(수정됨)</span>";
+                    }
                 });
-
-                console.log(str);// 저장된 태그 확인
-                // #replies 요소를 변수에 저장해주세요.
-                const $replies = document.getElementById('replies');
-                // 저장된 #replies의 innerHTML 에 str을 대입해 실제 화면에 출력되게 해주세요.
-                $replies.innerHTML = str;
             });
     }
-    // 함수 호출
     getAllReplies(blogId);
 
-    // 해당 함수 실행시 비동기 폼에 작성된 글쓴이, 내용으로 댓글 입력
-    function insertReply(){
-        let url = `http://localhost:8080/reply`;
 
-        // 요소가 다 채워졌는지 확인
-        if(document.getElementById("replyWriter").value.trim() === ""){
-            alert("글쓴이를 채워주셔야 합니다.");
+    function insertReply() {
+        let url = `/reply`;
+        //내용이 없거나 띄어쓰기만 넣어놓고 작성하는것을 막는다.
+        //금칙어는 cont ban =["금칙어내용"] 변수에 담아놓고 includes(ban)로 검사한다.
+        if (document.getElementById("replyWriter").value.trim() === "") {
+            alert("작성자를 입력해주세요");
             return;
         }
-        if(document.getElementById("replyContent").value.trim() === ""){
-            alert("본문을 채워주셔야 합니다.");
+        if (document.getElementById("replyContent").value.trim() === "") {
+            alert("댓글을 입력해주세요");
             return;
         }
         fetch(url, {
-            method:'post',
+            method: 'post',
             headers: {// header에는 보내는 데이터의 자료형에 대해서 기술
                 //json 데이터를 요청과 함께 전달, @RequestBody를 입력받는 로직에 추가
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ // 여기에 실질적으로 요청과 함께 보낼 json정보를 기술함
+            body: JSON.stringify({ // 실질적으로 요청과 보낼 json정보를 기술
                 replyWriter: document.getElementById("replyWriter").value,
                 replyContent: document.getElementById("replyContent").value,
-                blogId : "${blog.blogId}"
-            }), // insert 로직이기 때문에 response에 실제 화면에서 사용할 데이터 전송 X
+                blogId: "${blog.blogId}"
+            }), //insert 로직이기 때문에 reponse에 실제화면에 사용할 데이터 전송 X
         }).then(() => {
-            // 댓글 작성 후 폼에 작성되어있던 내용 소거
             document.getElementById("replyWriter").value = "";
             document.getElementById("replyContent").value = "";
-            alert("댓글 작성이 완료되었습니다!");
-            // 댓글 갱신 추가로 호출
+            alert("댓글 작성 완료");
             getAllReplies(blogId);
-        });
+        })
     }
 
-    // 제출버튼에 이벤트 연결하기
-    $replySubmit = document.getElementById("replySubmit");
-    // 버튼 클릭시 insertReply 내부 로직 실행
-    $replySubmit.addEventListener("click", insertReply);
+    document.getElementById("replySubmit").addEventListener("click", insertReply);
 
-    // 이벤트 객체를 활용해야 이벤트 위임을 구현하기 수월하므로 먼저 html객체부터 가져옵니다.
-    // 모든 댓글을 포함하고 있으면서 가장 가까운 영역인 #replies에 설정합니다.
-    const $replies = document.querySelector("#replies");
-
-    $replies.onclick = (e) => {
-        // 클릭한 요소가 #replies의 자손태그인 .deleteReplyBtn 인지 검사하기
-        // 이벤트객체.target.matches는 클릭한 요소가 어떤 태그인지 검사해줍니다.
-        if(!e.target.matches('#replies .deleteReplyBtn') // 삭제버튼도 아니고
-            && !e.target.matches('#replies .updateReplyBtn')){ // 수정버튼도 아니고
-            return; // 위 도 조건이 모두 충족되면 기능 실행 x
-        }else if(e.target.matches('#replies .deleteReplyBtn')){ // 클랙된 요소가 삭제버튼이라면
-            deleteReply(); // 아래에 정의된 deleteReplyBtn 호출해서 클린된 요소 삭제
-        }else if(e.target.matches('#replies .updateReplyBtn')){ // 클릳된 요로가 수정버튼이면
-            openUpdateReplyModal(); // 아래에 정의해둔 함수를 호풀해서 모달창 오픈
+    $replies.onclick = e =>{
+        //#replies의 자손(공백/자식은 >) 객체 중 .deleteReplyBtn인지 확인
+        if(!e.target.matches('#replies .deleteReplyBtn') && !e.target.matches('#replies .updateReplyBtn')){
+            return;
         }
 
-        // 수정버튼을 누르면 실행될 함수
-        function openUpdateReplyModal(){
-            // 클릭이벤트 객체 e의 target 속성의 dataset 속성 내부에 댓글번호가 있으므로 확인
-            console.log(e.target.dataset['replyid']);
+        if(e.target.matches('#replies .deleteReplyBtn')){
+            //event 객체안에 target안에 dataset안에 replyId(카멜케이스 인정 X 소문자로 되어있음)가 있다
+            const replyId = e.target.dataset.replyid;
 
-            const replyId = e.target.dataset['replyid'];
-            //const replyId = e.target.dataset.replyid; 위와 동일
-
-            // hidden 태그에 현재 내가 클릭한 replyId값을 value 프로퍼티에 저장해주기
-            const $modalReplyId = document.querySelector("#modalReplyId");
-            $modalReplyId.value = replyId;
-
-            // 가져올 id요소를 문자로 먼저 저장합니다.
-            let replyWriterId = `#replyWriter\${replyId}`;
-            let replyContentId = `#replyContent\${replyId}`;
-
-            // 위에서 추출한 id번호를 이용해 getElementId() 를 통해 요소로 가져온 다음
-            // 해당 요소의 text값을 얻어서 모달창의 폼 양식 내부에 넣어줍니다.
-            // 위에서 부여한 id를 이용해 span태그를 가지고 오는 코드
-
-            const $replyWriter = document.querySelector(replyWriterId);
-            const $replyContent = document.querySelector(replyContentId);
-
-            // 태그는 제거하고 내부 문자만 가지고 도록 처리하는 코드
-            const replyWriterOriginalValue = $replyWriter.innerText;
-            const replyContentOriginalValue = $replyContent.innerText;
-
-            // modal창 내부의 ReplyWriter, ReplyContent를 적을 수 있는 폼을 가져옵니다.
-            const $modalReplyWriter = document.getElementById("modalReplyWriter");
-            const $modalReplyContent = document.getElementById("modalReplyContent");
-
-            // 폼.value  = InnerText 형식으로 추출한 값을 대입해줍니다.
-            $modalReplyWriter.value = replyWriterOriginalValue;
-            $modalReplyContent.value = replyContentOriginalValue;
-        }
-
-        function deleteReply() {
-            // 클릭이벤트 객체 e의 target 속성의 dataset 속성 내부에 댓글번호가 있으므로 확인
-            console.log(e.target.dataset['replyid']);
-
-            const replyId = e.target.dataset['replyid'];
-            //const replyId = e.target.dataset.replyid; 위와 동일
-
-            if (confirm("정말로 삭제하시겠어요?")) { // 예, 아니오로 답할수있는 경고창을 띄웁니다.
-                // 예를 선택하면 true, 아니오를 선택하면 false입니다.
-
-                // 위 정보를 토대로 url 세팅 후 비동기 요청으로 삭제를 처리하고 댓글을 갱신해주세요.
-                // 상대주소 /reply/\${replyId}/
-
-                let url = `http://localhost:8080/reply/\${replyId}`;
-
-                fetch(url, {method: 'delete'})
-                    .then(() => {
-                        // 요청 넣은 후 실행할 코드를 여기에 적습니다.
-                        alert('해당 댓글을 삭제했습니다.');
-                        // 삭제되어 댓글 구성이 변경되었으므로 갱신
+            if(confirm("댓글을 삭제하시겠습니까?")){
+                fetch(`/reply/\${replyId}`,{method: 'delete'})
+                    .then(()=>{
+                        alert("삭제완료");
                         getAllReplies(blogId);
                     });
             }
+        }else if(e.target.matches('#replies .updateReplyBtn')){
+            const replyWriter = e.target.dataset.modalreplywriter;
+            const replyContent = e.target.dataset.modalreplycontent;
+            const replyId = e.target.dataset.modalreplyid;
+
+            document.querySelector('.updateReplyWriter').value = replyWriter;
+            document.querySelector('.updateReplyContent').value = replyContent;
+            document.querySelector('.updateReplyId').value = replyId;
         }
     }
+    document.getElementById('updateSubmitBtn').addEventListener("click",updateReplyFunc);
 
-    // 수정창이 열렸고, 댓글 수정 내역을 모두 폼에 입력한 뒤 수정하기 버튼을 누를경우
-    // 비동기 요청으로 수정 요청이 들어가도록 처리
-    $replyUpdateBtn = document.querySelector('#replyUpdateBtn');
+    function updateReplyFunc(){
+        const replyId = document.querySelector('.updateReplyId').value;
+        const $replyWriter = document.querySelector(".updateReplyWriter");
+        const $replyContent = document.querySelector(".updateReplyContent");
 
-    $replyUpdateBtn.onclick = (e) => {
-        // 히든으로 숨겨놓은 태그를 가져온 다음
-        const $modalReplyId = document.querySelector("#modalReplyId");
-        // 변수에 해당 글 번호를 저장한다음
-        const replyId = $modalReplyId.value;
-        // url에 포함시킴
-        const url = `http://localhost:8080/reply/\${replyId}`;
+        if ($replyWriter.value.trim() === "") {
+            alert("작성자를 입력해주세요");
+            $replyWriter.focus();
+            return;
+        }
+        if ($replyContent.value.trim() === "") {
+            alert("댓글을 입력해주세요");
+            $replyContent.focus();
+            return;
+        }
 
-        // 그 후 비동기 요청 넣기
-        fetch(url, {
+        fetch(`/reply/\${replyId}`, {
             method: 'PATCH',
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                replyWriter : document.querySelector("#modalReplyWriter").value,
-                replyContent : document.querySelector("#modalReplyContent").value,
-                replyId : replyId, // 위에 선언한 replyId 변수에 들어있는 값
-            }),
-        }).then(() => {
-            // 폼 소거
-            document.getElementById("replyWriter").value = "";
-            document.getElementById("replyContent").value = "";
-            getAllReplies(blogId); // 목록 갱신
-        });
+                replyWriter: $replyWriter.value,
+                replyContent: $replyContent.value
+            })
+        })
+            .then(()=>{
+                alert("수정완료");
+                getAllReplies(blogId);
+            });
+
     }
 </script>
+<!-- JavaScript Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 </body>
+
 </html>

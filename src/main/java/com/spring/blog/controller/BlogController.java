@@ -4,6 +4,7 @@ import com.spring.blog.entity.Blog;
 import com.spring.blog.exception.NotFoundBlogIdException;
 import com.spring.blog.service.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,13 +32,32 @@ public class BlogController {
     // 3. .jsp 에서 볼 수 있도록 출력
     // 해당 파일의 이르는 board/list.jsp입니다.
 
-    @GetMapping("/list")
-    public String list(Model model){
+    // PathVariable에서 null처리를 할 경우는 아래와 같이 경로패턴변수가 포함된 경로와 없는 경로 두 개를 묶어줍니다.
+    @GetMapping({"/list/{pageNum}", "/list"})
+    public String list(Model model, @PathVariable(required = false) Integer pageNum){
         // 1
-        List<Blog> blogList = blogService.findAll();
-        // 2
-        model.addAttribute("blogList", blogList);
-        // 3
+        Page<Blog> pageInfo = blogService.findAll(pageNum);
+
+        // 한 페이지에 보여야 하는 페이징 버튼 그룹의 개수
+        final int PAGE_BTN_NUM = 10;
+
+        // 현재 조회중인 페이지 번호 (0부터 세므로 주의)
+        int currentPageNum = pageInfo.getNumber() + 1; // 현재 조회중인 페이지에 강조하기 위해서 필요
+
+        // 현재 조회중인 페이지 그웁의 끝번호
+        int endPageNum = (int)Math.ceil(currentPageNum / (double)PAGE_BTN_NUM) * PAGE_BTN_NUM;
+
+        // 현재 조회중인 페이지 그룹의 시작번호
+        int startPageNum = endPageNum - PAGE_BTN_NUM + 1;
+
+        // 마지막 그룹 번호 보정
+        endPageNum = endPageNum > pageInfo.getTotalPages() ? pageInfo.getTotalPages() : endPageNum;
+
+        model.addAttribute("currentPageNum", currentPageNum);
+        model.addAttribute("startPageNum", startPageNum);
+        model.addAttribute("endPageNum", endPageNum);
+        model.addAttribute("blogList",pageInfo);
+
         return "blog/list";
     }
 

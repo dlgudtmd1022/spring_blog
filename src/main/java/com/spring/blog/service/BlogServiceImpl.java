@@ -6,6 +6,9 @@ import com.spring.blog.repository.BlogRepository;
 import com.spring.blog.repository.ReplyJPARepository;
 import com.spring.blog.repository.ReplyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,11 +33,17 @@ public class BlogServiceImpl implements BlogService {
         this.replyJPARepository = replyJPARepository;
     }
     @Override
-    public List<Blog> findAll(){
+    public Page<Blog> findAll(Integer pageNum){
 //        List<Blog> blogList = blogRepository.findAll();
 //        return blogList;
 //        return blogRepository.findAll(); < Mybatis를 활용한 전체 글 자져오기
-        return  blogJPARepository.findAll(); // < jpa를 활용한 전체 글 가져오기
+//        return  blogJPARepository.findAll(); // < jpa를 활용한 전체 글 가져오기
+        int calibratedPageNum = getCalibratedPageNum(pageNum);
+
+        // 페이징 처리에 과련된 정보를 먼저 객체로 생성합니다.
+        Pageable pageable = PageRequest.of(calibratedPageNum - 1,10);
+        // 생성된 페이징 정보를 파나미터로 제공해서 findAll()을 호출합니다.
+        return  blogJPARepository.findAll(pageable);
     }
 
     @Override
@@ -53,6 +62,7 @@ public class BlogServiceImpl implements BlogService {
 //        blogRepository.deleteById(blogId);
 
         // 댓글 삭제가 진행되도록 만들어라
+        replyJPARepository.deleteAllByBlogId(blogId);
         blogJPARepository.deleteById(blogId);
     }
 
@@ -78,5 +88,18 @@ public class BlogServiceImpl implements BlogService {
         updateBlog.setBlogTitle(blog.getBlogTitle());
 
         blogJPARepository.save(updateBlog);
+    }
+
+    // 보정된 pageNum으로 가공해주는 메서드
+    public int getCalibratedPageNum(Integer pageNum){
+        if(pageNum == null || pageNum <= 0){
+            pageNum = 1;
+        }else {
+            // 총 페이지 개수를 구하는 로직
+            int totalPagesCount = (int) (Math.ceil(blogJPARepository.count() / 10.0));
+
+            pageNum = pageNum > totalPagesCount ? totalPagesCount : pageNum;
+        }
+        return pageNum.intValue();
     }
 }
