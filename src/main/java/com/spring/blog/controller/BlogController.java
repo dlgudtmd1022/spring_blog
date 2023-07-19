@@ -5,6 +5,8 @@ import com.spring.blog.exception.NotFoundBlogIdException;
 import com.spring.blog.service.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller // 컨트롤러 어노테이션은 1. 빈 등록 +  2. url 매핑 처리 기능을 함께 가지고 있므으로 다른 어노테이션과 교환해서 쓸 수 없다.
@@ -33,8 +36,8 @@ public class BlogController {
     // 해당 파일의 이르는 board/list.jsp입니다.
 
     // PathVariable에서 null처리를 할 경우는 아래와 같이 경로패턴변수가 포함된 경로와 없는 경로 두 개를 묶어줍니다.
-    @GetMapping({"/list/{pageNum}", "/list"})
-    public String list(Model model, @PathVariable(required = false) Integer pageNum){
+    @RequestMapping({"/list/{pageNum}", "/list"})
+    public String list(Model model, @PathVariable(required = false) Long pageNum){
         // 1
         Page<Blog> pageInfo = blogService.findAll(pageNum);
 
@@ -56,7 +59,7 @@ public class BlogController {
         model.addAttribute("currentPageNum", currentPageNum);
         model.addAttribute("startPageNum", startPageNum);
         model.addAttribute("endPageNum", endPageNum);
-        model.addAttribute("blogList",pageInfo);
+        model.addAttribute("pageInfo",pageInfo);
 
         return "blog/list";
     }
@@ -67,7 +70,9 @@ public class BlogController {
     // 뷰에 적재하는 코드를 아래쪽에 작성해주세요
 
     @RequestMapping("/detail/{blogId}")
-    public String detail(@PathVariable long blogId, Model model){
+    public String detail(@PathVariable long blogId, Model model, Principal principal){
+
+        model.addAttribute("username", principal.getName());
         Blog blog = blogService.findById(blogId);
 
         if(blog == null){
@@ -90,7 +95,15 @@ public class BlogController {
     // 대신 폼 페이지는 GET방식으로 접속했을때 연결해주고
     // 폼에서 작성완료한 내용을 POST방식으로 제출해 저장하도록 만들어줍니다.
     @GetMapping("/insert")
-    public String insert(){
+    public String insert(Model model,  Principal principal){
+        // SecurityContext, Principal은 둘 다 인증정보를 가지고 있는 객체입니다.
+        // 둘중 편한걸 사용
+//        System.out.println(securityContextHolder); // controller내부에서 완료하고 싶을 때
+        System.out.println(principal.getName()); // jsp view연동 시 사용
+
+        // principle.getName()은 현재 로그인 유저의 아이디를 리턴합니다.
+        model.addAttribute("username", principal.getName());
+
         // /WEB-INF/views/blog/blog-form.jsp
         return "blog/blog-form";
     }

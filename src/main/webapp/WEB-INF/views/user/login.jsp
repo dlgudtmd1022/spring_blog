@@ -19,6 +19,9 @@
             </div>
                 <input type="submit" value="로그인">
         </form>
+        <form action="/signup" method="GET">
+            <input type="submit" value="회원가입">
+        </form>
     </div>
 </body>
 </html>

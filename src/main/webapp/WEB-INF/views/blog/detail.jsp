@@ -118,10 +118,12 @@
 </div>
 <br>
 <div class="container">
+    <a href="/blog/list" class="btn btn-primary">목록</a>
     <form name="deleteForm" style="margin-right: 5px;" class="button">
-        <a href="/blog/list" class="btn btn-primary">목록</a>
-        <input type="button" class="btn btn-primary" value="삭제" onclick="deleteBlog()">
-        <input type="hidden" name="blogId" value="${blog.blogId}">
+        <c:if test="${username eq blog.writer}">
+            <input type="button" class="btn btn-primary" value="삭제" onclick="deleteBlog()">
+            <input type="hidden" name="blogId" value
+        </c:if>
     </form>
     <form name="updateForm">
         <input type="button" class="btn btn-primary" value="수정" onclick="updateBlog()">

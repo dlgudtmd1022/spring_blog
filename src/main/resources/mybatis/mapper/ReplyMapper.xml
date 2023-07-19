@@ -53,7 +53,7 @@
             reply_content = #{replyContent},
             updated_at = now()
         WHERE
-            reply_id = #{replyId};
+            reply_id = #{replyId}
     </update>
 
     <delete id="deleteByBlogId" parameterType="long">

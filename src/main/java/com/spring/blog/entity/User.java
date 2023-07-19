@@ -24,7 +24,7 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false) // 수정 불가 옵션
-    private Long Id; // null 체크 대비
+    private Long id; // null 체크 대비
 
     @Column(nullable = false, unique = true) // 프라이머리키는 아니지만 유일 키로 사용
     private String email;
@@ -70,7 +70,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
