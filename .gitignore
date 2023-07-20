@@ -36,6 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 
-### profiles ###
+### yml ###
 application-db.yml
 application-jwt.yml
