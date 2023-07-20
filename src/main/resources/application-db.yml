@@ -1,0 +1,4 @@
+username_: master
+password: mustang2018!
+driver-class-name: com.mysql.cj.jdbc.Driver
+url: jdbc:mysql://db-hh65o-kr.vpc-pub-cdb.ntruss.com:3306/dynamic-blog?serverTimezone=UTC&characterEncoding=UTF-8
